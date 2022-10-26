@@ -6,7 +6,7 @@
 /*   By: mlektaib <mlektaib@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/26 18:34:16 by mlektaib          #+#    #+#             */
-/*   Updated: 2022/10/26 19:43:15 by mlektaib         ###   ########.fr       */
+/*   Updated: 2022/10/26 20:59:39 by mlektaib         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,6 +35,8 @@ int	read_file(int fd, int *readed, t_list **buffer)
 	while (ft_check(*buffer) != 1 && *readed > 0)
 	{
 		content = malloc((BUFFER_SIZE + 1) * sizeof(char));
+		if (!content)
+			return (0);
 		*readed = (int)read(fd, content, BUFFER_SIZE);
 		if (*readed <= 0)
 		{
@@ -42,6 +44,7 @@ int	read_file(int fd, int *readed, t_list **buffer)
 			break ;
 		}
 		add_tolist(content, buffer, *readed);
+		free(content);
 	}
 	return (1);
 }
@@ -52,17 +55,17 @@ void	add_tolist(char *content, t_list **buffer, int readed)
 	int		i;
 	t_list	*last;
 
-	i = 0;
+	i = -1;
 	if (!content || read <= 0 || !buffer)
 		return ;
 	newnode = malloc(sizeof(t_list));
+	if (!newnode)
+		return ;
 	newnode->content = malloc(sizeof(char) * (readed + 1));
-	while (i < readed)
-	{
+	if (!newnode->content)
+		return ;
+	while (i++ < readed)
 		newnode->content[i] = content[i];
-		i++;
-	}
-	free(content);
 	newnode->content[i] = 0;
 	newnode->next = NULL;
 	last = ft_lstlast(*buffer);
@@ -83,7 +86,7 @@ char	*extract_line(t_list *buffer)
 	if (!buffer)
 		return (0);
 	allocline(buffer, &line);
-	if (line == 0)
+	if (!line)
 		return (0);
 	while (buffer)
 	{
