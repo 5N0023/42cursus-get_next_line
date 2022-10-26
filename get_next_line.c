@@ -10,11 +10,9 @@ char *get_next_line(int fd)
 
 	if(fd < 0 || BUFFER_SIZE <= 0 || read(fd,&line,0) < 0)
 		return 0;
-	if (read_file(fd,&readed,&buffer))
-		line = extract_line(buffer);
-	else
-		return 0;
-	if(line)
+	read_file(fd,&readed,&buffer);
+	line = extract_line(buffer);
+	if (line)
 		make_remain(&buffer);
 	return(line);
 
@@ -30,7 +28,10 @@ int	read_file(int fd,int *readed,t_list **buffer)
 			content = malloc((BUFFER_SIZE+1)*sizeof(char));
 			*readed = (int)read(fd,content,BUFFER_SIZE);
 			if(*readed <= 0)
+			{
+				free(content);
 				break;
+			}
 			add_tolist(content,buffer,*readed);
 		}
 	return 1;
@@ -41,6 +42,7 @@ void add_tolist(char *content,t_list **buffer,int readed)
 {
 	t_list *newnode;
 	int i = 0;
+	t_list *last;
 
 	if(!content || read <= 0 || !buffer)
 		return;
@@ -54,7 +56,11 @@ void add_tolist(char *content,t_list **buffer,int readed)
 	free(content);
 	newnode->content[i] = 0;
 	newnode->next = NULL;
-	ft_lstadd_back(buffer,newnode);
+	last = ft_lstlast(*buffer);
+	if (!last)
+		*buffer = newnode;
+	else
+		last->next = newnode;
 
 }
 void	ft_lstadd_back(t_list **lst, t_list *new)
@@ -77,48 +83,52 @@ void	ft_lstadd_back(t_list **lst, t_list *new)
 char *extract_line(t_list *buffer)
 {
 	char *line;
-	t_list *current;
 	size_t i = 0;
 	size_t j = 0;
 	if(!buffer)
 		return 0;
-	current = buffer;
-	line = malloc(sizeof(char) *alloccount(buffer) + 1);
-	while(current)
+	allocline(buffer,&line);
+	if (line  == 0)
+		return 0 ;
+	while(buffer)
 	{
 		j = 0;
-		while(current->content[j] != '\n' && current->content[j])
+		while(buffer->content[j] != '\n' && buffer->content[j])
 				{
-					line[i] = current->content[j];
+					line[i] = buffer->content[j];
 					i++;
 					j++;
 				} 
-		if (current->content[j] == '\n')
+		if (buffer->content[j] == '\n')
 		{
 			line[i] = '\n';
 			i++;
 		}
-		current = current->next;
+		buffer = buffer->next;
 	}
 	line[i] = 0;
 	return(line);
 }
 
-size_t alloccount(t_list *buffer)
+void allocline(t_list *buffer,char **line)
 {
-	t_list *current;
 	size_t count = 0;
-	current = buffer;
+	char c;
 	if(!buffer)
-		return 0;
-	while(current)
+		return ;
+	while(buffer)
 	{
-		while(current->content[count] != '\n' && current->content[count])
+		while((c = buffer->content[count]) != '\n' && buffer->content[count])
 				count++;
-		current = current->next;
+		buffer = buffer->next;
+	}
+	if (count == 0 && c != '\n')
+	{
+		*line = 0;
+		return ;
 	}
 	count++;
-	return count;
+	*line = malloc(sizeof(char) * count +1);
 }
 
 void make_remain(t_list **buffer)
@@ -210,13 +220,31 @@ int main()
 	 int fd = open("test",O_RDONLY);
 	
 	printf("%s",get_next_line(fd));
+		printf("%s",get_next_line(fd));
+
 	printf("%s",get_next_line(fd));
+
 	printf("%s",get_next_line(fd));
+
 	printf("%s",get_next_line(fd));
+
 	printf("%s",get_next_line(fd));
+
 	printf("%s",get_next_line(fd));
+
 	printf("%s",get_next_line(fd));
+
 	printf("%s",get_next_line(fd));
+
 	printf("%s",get_next_line(fd));
-	//system("leaks a.out");
+
+	printf("%s",get_next_line(fd));
+
+
+	printf("%s",get_next_line(fd));
+
+	printf("%s",get_next_line(fd));
+
+
+
 }

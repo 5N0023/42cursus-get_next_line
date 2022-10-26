@@ -17,9 +17,8 @@ typedef struct s_list
 
 int	read_file(int fd,int *readed,t_list **buffer);
 void add_tolist(char *content,t_list **buffer,int readed);
-void	ft_lstadd_back(t_list **lst, t_list *new);
 char *extract_line(t_list *buffer);
-size_t alloccount(t_list *buffer);
+void allocline(t_list *buffer,char **line);
 int ft_check(t_list *buffer);
 size_t	ft_strlen(const char *str);
 void	ft_lstclear(t_list **lst);
