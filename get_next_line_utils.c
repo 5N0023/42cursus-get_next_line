@@ -6,7 +6,7 @@
 /*   By: mlektaib <mlektaib@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/26 18:35:41 by mlektaib          #+#    #+#             */
-/*   Updated: 2022/10/26 18:37:27 by mlektaib         ###   ########.fr       */
+/*   Updated: 2022/10/27 02:15:46 by mlektaib         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,29 +15,29 @@
 void	make_remain(t_list **buffer)
 {
 	t_list	*last;
-	t_list	*clean_node;
+	t_list	*remain_node;
 	int		i;
 	int		j;
 
-	clean_node = malloc(sizeof(t_list));
-	if (buffer == NULL || clean_node == NULL)
+	remain_node = malloc(sizeof(t_list));
+	if (buffer == NULL || remain_node == NULL)
 		return ;
-	clean_node->next = NULL;
+	remain_node->next = NULL;
 	last = ft_lstlast(*buffer);
 	i = 0;
 	while (last->content[i] && last->content[i] != '\n')
 		i++;
 	if (last->content && last->content[i] == '\n')
 		i++;
-	clean_node->content = malloc(((ft_strlen(last->content) - i) + 1));
-	if (clean_node->content == NULL)
+	remain_node->content = malloc(((ft_strlen(last->content) - i) + 1));
+	if (remain_node->content == NULL)
 		return ;
 	j = 0;
 	while (last->content[i])
-		clean_node->content[j++] = last->content[i++];
-	clean_node->content[j] = '\0';
+		remain_node->content[j++] = last->content[i++];
+	remain_node->content[j] = '\0';
 	ft_lstclear(buffer);
-	*buffer = clean_node;
+	*buffer = remain_node;
 }
 
 t_list	*ft_lstlast(t_list *lst)
