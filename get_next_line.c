@@ -6,7 +6,7 @@
 /*   By: mlektaib <mlektaib@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/26 18:34:16 by mlektaib          #+#    #+#             */
-/*   Updated: 2022/10/26 20:59:39 by mlektaib         ###   ########.fr       */
+/*   Updated: 2022/10/27 01:01:39 by mlektaib         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,21 +17,27 @@ char	*get_next_line(int fd)
 	static t_list	*buffer;
 	int				readed;
 	char			*line;
+	int				n;
 
 	readed = 1;
+	n = 0;
 	if (fd < 0 || BUFFER_SIZE <= 0 || read(fd, &line, 0) < 0)
 		return (0);
-	read_file(fd, &readed, &buffer);
+	n = read_file(fd, &readed, &buffer);
 	line = extract_line(buffer);
-	if (line)
+	if (line && n != 0)
 		make_remain(&buffer);
+	if (n == 0)
+		ft_lstclear(&buffer);
 	return (line);
 }
 
 int	read_file(int fd, int *readed, t_list **buffer)
 {
 	char	*content;
+	int		end;
 
+	end = 1;
 	while (ft_check(*buffer) != 1 && *readed > 0)
 	{
 		content = malloc((BUFFER_SIZE + 1) * sizeof(char));
@@ -41,12 +47,13 @@ int	read_file(int fd, int *readed, t_list **buffer)
 		if (*readed <= 0)
 		{
 			free(content);
+			end = 0;
 			break ;
 		}
 		add_tolist(content, buffer, *readed);
 		free(content);
 	}
-	return (1);
+	return (end);
 }
 
 void	add_tolist(char *content, t_list **buffer, int readed)
@@ -55,7 +62,7 @@ void	add_tolist(char *content, t_list **buffer, int readed)
 	int		i;
 	t_list	*last;
 
-	i = -1;
+	i = 0;
 	if (!content || read <= 0 || !buffer)
 		return ;
 	newnode = malloc(sizeof(t_list));
@@ -64,8 +71,11 @@ void	add_tolist(char *content, t_list **buffer, int readed)
 	newnode->content = malloc(sizeof(char) * (readed + 1));
 	if (!newnode->content)
 		return ;
-	while (i++ < readed)
+	while (i < readed)
+	{
 		newnode->content[i] = content[i];
+		i++;
+	}
 	newnode->content[i] = 0;
 	newnode->next = NULL;
 	last = ft_lstlast(*buffer);
